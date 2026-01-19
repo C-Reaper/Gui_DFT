@@ -5,57 +5,69 @@
 #include "/home/codeleaded/System/Static/Library/DFT.h"
 
 double actime;
-double speed;
 Vec2 cxoffset;
 Vec2 cyoffset;
 Vec2 offset;
 TransformedView tv;
 Vector vVales;
 
-#define DFT_SIZE	1000
-double* pointsX;
-double* pointsY;
-Vec2* dftX;
-Vec2* dftY;
+Points_Pair points;
+DFT dftX;
+DFT dftY;
+
+double SquareX(double a){
+	a /= F64_PI2;
+	a = a - (int)a;
+	if(a < 0.25) 		return a;
+	else if(a < 0.5) 	return 1.0;
+	else if(a < 0.75) 	return a - 0.5;
+	else				return -1.0;
+}
+double SquareY(double a){
+	a /= F64_PI2;
+	a = a - (int)a;
+	if(a < 0.25) 		return -1.0;
+	else if(a < 0.5) 	return a;
+	else if(a < 0.75) 	return 1.0;
+	else				return a - 0.75;
+}
 
 void Setup(AlxWindow* w){
 	tv = TransformedView_Make(
 		(Vec2){ GetWidth(),GetHeight() },
-		(Vec2){ 0.0f,0.0f },
-		(Vec2){ 0.1f,0.1f },
+		(Vec2){ -600.0f,-400.0f },
+		(Vec2){ 0.0015f,0.0015f },
 		(float)GetWidth() / (float)GetHeight()
 	);
 
 	actime = 0.0f;
-	speed = 0.001f;
-	cxoffset = (Vec2){ 2.0f,0.0f };
-	cyoffset = (Vec2){ 0.0f,2.0f };
+	cxoffset = (Vec2){ 0.0f,-250.0f };
+	cyoffset = (Vec2){ -250.0f,0.0f };
 	offset = (Vec2){ cxoffset.x,cyoffset.y };
 	vVales = Vector_New(sizeof(double));
-
-	//pointsX = DFT_PointsFunc(0.0,F64_PI2,DFT_SIZE,cos);
-	//pointsY = DFT_PointsFunc(0.0,F64_PI2,DFT_SIZE,sin);
-
-	pointsX = DFT_PointsFunc(0.0,F64_PI2,DFT_SIZE,cos);
-	pointsY = DFT_PointsFunc(0.0,F64_PI2,DFT_SIZE,sin);
 	
-	dftX = DFT_CalcP(pointsX,DFT_SIZE);
-	dftY = DFT_CalcP(pointsY,DFT_SIZE);
+	//points = DFT_PointsFunc2D(0.0,F64_PI2,1000,cos,sin);
+	//points = DFT_PointsFunc2D(0.0,F64_PI2,1000,SquareX,SquareY);
+	
+	points = DFT_PointsLoad2D("./data/CodingTrain.txt",1);
+
+	dftX = DFT_Calc(points.xs.Memory,points.xs.size);
+	dftY = DFT_Calc(points.ys.Memory,points.ys.size);
 }
 void Update(AlxWindow* w){
 	TransformedView_HandlePanZoom(&tv,window.Strokes,GetMouse());
 	Rect r = TransformedView_ScreenWorldRect(&tv,GetScreenRect());
 
-	const double dt = F32_PI2 / (double)DFT_SIZE;
+	const double dt = F64_PI2 / (double)dftX.size;
 	actime += dt;
 
 	Clear(BLACK);
 
-	DFT_Render(WINDOW_STD_ARGS,&tv,cxoffset.x,cxoffset.y,dftX,DFT_SIZE,speed,actime);
-	DFT_Render(WINDOW_STD_ARGS,&tv,cyoffset.x,cyoffset.y,dftY,DFT_SIZE,speed,actime);
+	DFT_Render(WINDOW_STD_ARGS,&tv,cxoffset.x,cxoffset.y,&dftX,0.0,actime);
+	DFT_Render(WINDOW_STD_ARGS,&tv,cyoffset.x,cyoffset.y,&dftY,F32_PI05,actime);
 	
-	const Vec2 outx = DFT_Calc(dftX,DFT_SIZE,speed,actime);
-	const Vec2 outy = DFT_Calc(dftY,DFT_SIZE,speed,actime);
+	const Vec2 outx = DFT_CalcBack(&dftX,0.0,actime);
+	const Vec2 outy = DFT_CalcBack(&dftY,F32_PI05,actime);
 	const Vec2 v = {
 		outx.x,
 		outy.y
@@ -74,7 +86,7 @@ void Update(AlxWindow* w){
 	Line_RenderX(WINDOW_STD_ARGS,ypS,ytS,WHITE,1.0f);
 
 	
-	if(vVales.size>DFT_SIZE)
+	if(vVales.size>points.xs.size)
 		Vector_PopTop(&vVales);
 
 	for(int i = 1;i<vVales.size;i++){
@@ -86,22 +98,15 @@ void Update(AlxWindow* w){
 		Line_RenderX(WINDOW_STD_ARGS,pS,tS,WHITE,1.0f);
 	}
 
-	String str = String_Format("MI:%d",DFT_SIZE);
+	String str = String_Format("MI:%d",points.xs.size);
 	CStr_RenderSizeAlxFont(WINDOW_STD_ARGS,&window.AlxFont,str.Memory,str.size,0.0f,0.0f,WHITE);
 	String_Free(&str);
 }
 void Delete(AlxWindow* w){
 	Vector_Free(&vVales);
-	
-	if(pointsX) free(pointsX);
-	pointsX = NULL;
-	if(pointsY) free(pointsY);
-	pointsY = NULL;
-
-	if(dftX) free(dftX);
-	dftX = NULL;
-	if(dftY) free(dftY);
-	dftY = NULL;
+	Points_Pair_Free(&points);
+	DFT_Free(&dftX);
+	DFT_Free(&dftY);
 }
 
 int main(){
