@@ -27,7 +27,7 @@ void Setup(AlxWindow* w){
 	cxoffset = (Vec2){ 0.0f,-250.0f };
 	cyoffset = (Vec2){ -250.0f,0.0f };
 	offset = (Vec2){ cxoffset.x,cyoffset.y };
-	vVales = Vector_New(sizeof(double));
+	vVales = Vector_New(sizeof(Vec2));
 	
 	points = DFT_PointsLoad2D("./data/CodingTrain.txt",1);
 
