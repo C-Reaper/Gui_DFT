@@ -12,25 +12,8 @@ TransformedView tv;
 Vector vVales;
 
 Points_Pair points;
-DFT dftX;
-DFT dftY;
-
-double SquareX(double a){
-	a /= F64_PI2;
-	a = a - (int)a;
-	if(a < 0.25) 		return a;
-	else if(a < 0.5) 	return 1.0;
-	else if(a < 0.75) 	return a - 0.5;
-	else				return -1.0;
-}
-double SquareY(double a){
-	a /= F64_PI2;
-	a = a - (int)a;
-	if(a < 0.25) 		return -1.0;
-	else if(a < 0.5) 	return a;
-	else if(a < 0.75) 	return 1.0;
-	else				return a - 0.75;
-}
+FS dftX;
+FS dftY;
 
 void Setup(AlxWindow* w){
 	tv = TransformedView_Make(
@@ -46,13 +29,10 @@ void Setup(AlxWindow* w){
 	offset = (Vec2){ cxoffset.x,cyoffset.y };
 	vVales = Vector_New(sizeof(double));
 	
-	//points = DFT_PointsFunc2D(0.0,F64_PI2,1000,cos,sin);
-	//points = DFT_PointsFunc2D(0.0,F64_PI2,1000,SquareX,SquareY);
-	
 	points = DFT_PointsLoad2D("./data/CodingTrain.txt",1);
 
-	dftX = DFT_Calc(points.xs.Memory,points.xs.size);
-	dftY = DFT_Calc(points.ys.Memory,points.ys.size);
+	dftX = DFT_CalcFS(points.xs.Memory,points.xs.size);
+	dftY = DFT_CalcFS(points.ys.Memory,points.ys.size);
 }
 void Update(AlxWindow* w){
 	TransformedView_HandlePanZoom(&tv,window.Strokes,GetMouse());
@@ -63,11 +43,11 @@ void Update(AlxWindow* w){
 
 	Clear(BLACK);
 
-	DFT_Render(WINDOW_STD_ARGS,&tv,cxoffset.x,cxoffset.y,&dftX,0.0,actime);
-	DFT_Render(WINDOW_STD_ARGS,&tv,cyoffset.x,cyoffset.y,&dftY,F32_PI05,actime);
+	FS_Render(WINDOW_STD_ARGS,&tv,cxoffset.x,cxoffset.y,&dftX,0.0,actime);
+	FS_Render(WINDOW_STD_ARGS,&tv,cyoffset.x,cyoffset.y,&dftY,F32_PI05,actime);
 	
-	const Vec2 outx = DFT_CalcBack(&dftX,0.0,actime);
-	const Vec2 outy = DFT_CalcBack(&dftY,F32_PI05,actime);
+	const Vec2 outx = FS_Calc(&dftX,0.0,actime);
+	const Vec2 outy = FS_Calc(&dftY,F32_PI05,actime);
 	const Vec2 v = {
 		outx.x,
 		outy.y
@@ -98,15 +78,15 @@ void Update(AlxWindow* w){
 		Line_RenderX(WINDOW_STD_ARGS,pS,tS,WHITE,1.0f);
 	}
 
-	String str = String_Format("MI:%d",points.xs.size);
+	String str = String_Format("MI: %d",points.xs.size);
 	CStr_RenderSizeAlxFont(WINDOW_STD_ARGS,&window.AlxFont,str.Memory,str.size,0.0f,0.0f,WHITE);
 	String_Free(&str);
 }
 void Delete(AlxWindow* w){
 	Vector_Free(&vVales);
 	Points_Pair_Free(&points);
-	DFT_Free(&dftX);
-	DFT_Free(&dftY);
+	FS_Free(&dftX);
+	FS_Free(&dftY);
 }
 
 int main(){
