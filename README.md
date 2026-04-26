@@ -1,193 +1,75 @@
-# Gui_DFT
+# Project README
 
+## Overview
+This project is a C application for visualizing Discrete Fourier Transform (DFT) using a graphical user interface. It includes features such as loading data, performing DFT, and displaying the results graphically.
 
-## Project Overview
+## Features
+- **Data Loading**: Load data from a text file.
+- **Discrete Fourier Transform (DFT)**: Compute the DFT of the loaded data.
+- **Graphical Display**: Visualize the original data and its DFT coefficients.
+- **User Interface**: Interact with the application through a graphical interface.
 
-This project implements specialized functionality related to dft.
-
-## Core Components
-
-### Main Functionality
-- Implements core algorithms for dft
-- Efficient data structures
-- Optimized performance
-- Clean code organization
-
-### Technical Features
-- C/C++ implementation
-- Dynamic memory management
-- Platform-independent design
-- Real-time capable
-
-### Architecture
-- Module separation
-- Clear interface design
-- Proper abstraction layers
-- Extensible design
-
-## Use Cases
-- Production systems
-- Educational purposes
-- Research applications
-- Performance-critical operations
-
-## Performance Characteristics
-- Optimized algorithms
-- Efficient memory usage
-- Scalable architecture
-- Minimal overhead
-
-## Implementation Quality
-- Well-organized code
-- Meaningful naming
-- Proper error handling
-- Memory management
-
-## Build and Deployment
-- Standard C/C++ compilation
-- Makefile-based building
-- Cross-platform support
-- Easy integration
-
-
-## Building the Project
+## Project Structure
+- **build/**: Contains executable files produced by compiling Main.c.
+- **src/**:
+  - **Main.c**: Entry point of the program.
+  - **DFT.h**, **DFT.c**: Header and implementation for DFT calculations.
+  - **GUI.h**, **GUI.c**: Header and implementation for graphical user interface.
 
 ### Prerequisites
-- C/C++ Compiler (GCC, Clang, or MSVC)
+- C/C++ Compiler and Debugger (GCC, Clang)
 - Make utility
 - Standard development tools
+- Libraries needed in specific projects:
+  - X11: For cross-platform GUI window management on Linux.
+  - WINAPI: For Windows-specific GUI functionalities.
+  - ALSA: For audio processing features.
 
-### Build Steps
+## Build & Run
+### Building the Project
 
-1. Navigate to project directory:
+To build the project, navigate to the project directory and use the appropriate Makefile for your operating system:
+
+#### Linux
 ```bash
-cd Gui_DFT
+cd <Project>
+make -f Makefile.linux all
 ```
 
-2. Build the project:
+#### Windows
 ```bash
-make -f Makefile.(os) all
+cd <Project>
+make -f Makefile.windows all
 ```
 
-3. For clean rebuild:
+#### Wine (Linux Cross Compile for Windows)
+```bash
+cd <Project>
+make -f Makefile.wine all
+```
+
+#### WebAssembly (Emscripten)
+```bash
+cd <Project>
+make -f Makefile.web all
+```
+
+### Executing the Program
+
+To run the compiled program, use:
+```bash
+make -f Makefile.(os) exe
+```
+Replace `(os)` with `linux`, `windows`, or `wine` as appropriate.
+
+### Clean Rebuild
+To perform a clean rebuild of the project:
 ```bash
 make -f Makefile.(os) clean
 make -f Makefile.(os) all
 ```
 
-4. If there are ./bin and ./libs directories, build libs with:
-```bash
-make -f Makefile.(os) cleanlib
-make -f Makefile.(os) lib
-```
-
 ### Build Options
-```bash
-make -f Makefile.(os) all         # build output
-make -f Makefile.(os) do        # build + exe output
-make -f Makefile.(os) clean   # Remove build artifacts
-```
-
-## Running the Project
-
-Execute the compiled binary:
-
-```bash
-./build/Main(.exe)
-```
-
-Or using make:
-```bash
-make -f Makefile.(os) exe
-```
-
-## Project Organization
-
-```
-Gui_DFT/
-├── src/
-│   ├── Main.c          # Entry point
-│   └── *.c             # Implementation files
-├── Makefile            # Build configuration
-└── README.md           # This file
-```
-
-## Technical Details
-
-### Language: C/C++
-- Performance-oriented
-- Direct hardware access where needed
-- Memory efficient
-- Widely portable
-
-### Key Technologies
-- Standard C library
-- System-specific libraries as needed
-- Algorithm optimization
-- Efficient data structures
-
-### Code Quality
-- Clean, readable implementation
-- Proper error handling
-- Resource management
-- Well-documented algorithms
-
-## Development Notes
-
-### Architecture Decisions
-- Modular design for reusability
-- Efficient algorithms for performance
-- Clear separation of concerns
-- Extensible structure
-
-### Performance Optimizations
-- Algorithm efficiency
-- Memory layout optimization
-- Cache-conscious programming
-- Minimal overhead
-
-### Portability
-- Cross-platform compatible
-- Platform-specific optimizations where possible
-- Standard library usage
-- No external dependencies (where feasible)
-
-## Troubleshooting
-
-### Build Issues
-- Ensure compiler is installed
-- Check file paths and permissions
-- Verify Make installation
-- Review compiler error messages
-
-### Runtime Issues
-- Check input data validity
-- Verify file accessibility
-- Ensure sufficient memory
-- Review output format
-
-### Performance Issues
-- Check compiler optimization flags
-- Profile hot code paths
-- Review algorithm complexity
-- Consider input size
-
-## Future Improvements
-
-Potential enhancements:
-- Additional optimization opportunities
-- Extended functionality
-- Platform-specific optimizations
-- Performance profiling
-
-## References
-
-For technical background:
-- Algorithm textbooks
-- Computer science references
-- Language documentation
-- Online educational resources
-
----
-
-*Project implementing practical algorithms and data structures in C/C++*
+- **Build Output**: `make -f Makefile.(os) all`
+- **Build and Execute**: `make -f Makefile.(os) do`
+- **Clean Artifacts**: `make -f Makefile.(os) clean`
